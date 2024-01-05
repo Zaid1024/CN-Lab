@@ -36,7 +36,7 @@ $ns flush-trace
 close $na
 close $nt
 exec nam Lab3.nam &
-exec xgraph tcp1.xg tcp2.xg &
+exec ./xgraph tcp1.xg tcp2.xg &
 exit 0
 }
 proc Draw {Agent File} {
