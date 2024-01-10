@@ -1,32 +1,28 @@
+import java.net.*;
 import java.io.*;
-import java.net.Socket;
 
-public class Client {
-	public static void main(String[] args) {
-		String serverAddress = "localhost";
-		int serverPort = 12345;
-		String fileName = "zaid.txt";
+public class TcpClient {
+    public static void main(String[] args) throws Exception {
+        Socket sock = new Socket("127.0.0.1", 4000);
+        System.out.println("Enter the file name: ");
+        BufferedReader nameRead = new BufferedReader(new InputStreamReader(System.in));
+        String fname = nameRead.readLine();
 
-		try {
-			Socket socket = new Socket(serverAddress, serverPort);
+        OutputStream ostream = sock.getOutputStream();
+        PrintWriter pwrite = new PrintWriter(ostream, true);
+        pwrite.println(fname);
 
-			BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+        InputStream iStream = sock.getInputStream();
+        BufferedReader contentRead = new BufferedReader(new InputStreamReader(iStream));
+        String str;
 
-			out.println(fileName);
+        while ((str = contentRead.readLine()) != null) {
+            System.out.println(str);
+        }
 
-			String response;
-			while ((response = in.readLine()) != null) {
-				if (response.equals("File not found")) {
-					System.out.println("File not found on the server.");
-					break;
-				}
-				System.out.println(response);
-			}
-
-			socket.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+        contentRead.close();
+        pwrite.close();
+        sock.close();
+        nameRead.close();
+    }
 }
