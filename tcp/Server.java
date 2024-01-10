@@ -1,60 +1,39 @@
+import java.net.*;
 import java.io.*;
-import java.net.ServerSocket;
-import java.net.Socket;
 
 public class Server {
-		public static void main(String[] args) {
-				try {
-						ServerSocket serverSocket = new ServerSocket(12345);
+    public static void main(String[] args) throws Exception {
+        while (true) {
+            ServerSocket sersock = new ServerSocket(4000);
+            System.out.println("Server connected, waiting for Client");
+            Socket sock = sersock.accept();
+            System.out.println("Connection successful, waiting for filename");
 
-						System.out.println("Server is listening on port 12345...");
+            InputStream iStream = sock.getInputStream();
+            BufferedReader namReader = new BufferedReader(new InputStreamReader(iStream));
+            String fname = namReader.readLine();
 
-						while (true) {
-								Socket socket = serverSocket.accept();
-								System.out.println("Client connected: " + socket.getInetAddress());
+            OutputStream oStream = sock.getOutputStream();
+            PrintWriter pwrite = new PrintWriter(oStream, true);
 
-								Thread clientHandler = new Thread(new ClientHandler(socket));
-								clientHandler.start();
-						}
-				} catch (IOException e) {
-						e.printStackTrace();
-				}
-		}
-}
+            try {
+                BufferedReader contentRead = new BufferedReader(new FileReader(fname));
+                String str;
 
-class ClientHandler implements Runnable {
-		private Socket socket;
+                while ((str = contentRead.readLine()) != null) {
+                    pwrite.println(str);
+                }
 
-		public ClientHandler(Socket socket) {
-				this.socket = socket;
-		}
-
-		@Override
-		public void run() {
-				try {
-						BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-						PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-
-						String fileName = in.readLine();
-						System.out.println("Client requested file: " + fileName);
-
-						File file = new File(fileName);
-
-						if (file.exists()) {
-								BufferedReader fileReader = new BufferedReader(new FileReader(file));
-								String line;
-								while ((line = fileReader.readLine()) != null) {
-										out.println(line);
-								}
-								fileReader.close();
-						} else {
-								out.println("File not found");
-						}
-
-						socket.close();
-						System.out.println("Connection closed.");
-				} catch (IOException e) {
-						e.printStackTrace();
-				}
-		}
+                contentRead.close();
+            } catch (FileNotFoundException e) {
+                pwrite.println("File doesn't exist");
+            } finally {
+                System.out.println("Closing connection");
+                pwrite.close();
+                namReader.close();
+                sock.close();
+                sersock.close();
+            }
+        }
+    }
 }
