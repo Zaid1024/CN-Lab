@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class tb2{
+public class tb2 {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         Random random = new Random();
@@ -32,15 +32,15 @@ public class tb2{
                     tokens -= sent;
                     packets[i] -= sent;
 
-                    System.out.println(cycle + "\t" + (packets[i] + sent) + "\t" + sent + "\t" + tokens);
+                    System.out.println(cycle + "\t" + (packets[i] + sent) + "\t" + sent + "\t" + (packets[i] > 0 ? packets[i] : 0));
 
                     if (packets[i] == 0) {
                         i++;
                     }
                 }
             } else {
+                System.out.println(cycle + "\t---\t0\t" + 0);
                 tokens = Math.max(tokens - outrate, 0);
-                System.out.println(cycle + "\t---\t0\t" + tokens);
             }
         }
 
