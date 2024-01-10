@@ -1,66 +1,25 @@
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.Scanner;
-import java.util.Timer;
-import java.util.TimerTask;
-
-class LeakyBucket {
-		private int bucketSize;
-		private int rate;
-		private Queue<Integer> bucket;
-
-		public LeakyBucket(int bucketSize, int rate) {
-				this.bucketSize = bucketSize;
-				this.rate = rate;
-				this.bucket = new LinkedList<>();
-
-				// Set up a timer to simulate time passing
-				Timer timer = new Timer();
-				timer.scheduleAtFixedRate(new TimerTask() {
-						@Override
-						public void run() {
-								if (!bucket.isEmpty()) {
-										int removed = bucket.poll();
-										System.out.println("Dropping packet: " + removed);
-								}
-						}
-				}, 0, 1000 / rate); // Timer runs every 1000 milliseconds / rate
-		}
-
-		public void addPacket(int packetSize) {
-				if (bucket.size() < bucketSize) {
-						bucket.add(packetSize);
-						System.out.println("Packet added: " + packetSize);
-				} else {
-						System.out.println("Bucket full. Dropping packet: " + packetSize);
-				}
-		}
-
-		public static void main(String[] args) {
-				Scanner scanner = new Scanner(System.in);
-
-				System.out.print("Enter the bucket size: ");
-				int bucketSize = scanner.nextInt();
-
-				System.out.print("Enter the rate (packets per second): ");
-				int rate = scanner.nextInt();
-
-				// Create a leaky bucket with user-input parameters
-				LeakyBucket leakyBucket = new LeakyBucket(bucketSize, rate);
-
-				// Take user input for packet sizes until the user decides to exit
-				while (true) {
-						System.out.print("Enter packet size (or -1 to exit): ");
-						int packetSize = scanner.nextInt();
-
-						if (packetSize == -1) {
-								break;
-						}
-
-						// Add the packet to the bucket
-						leakyBucket.addPacket(packetSize);
-				}
-
-				scanner.close();
-		}
+public class LeakyBucket {
+    public static void main(String[] args) {
+        int no_of_queries = 4;
+        int bucket_size = 10;
+        int input_packet_size;
+        int output_packet_size = 1;
+        int stored_buffer_size = 0;
+        int size_left;
+        Scanner sc = new Scanner(System.in); 
+        for(int i=0; i<no_of_queries; i++){
+            System.out.println("Input Packet Size :");
+            input_packet_size=sc.nextInt();
+            size_left=bucket_size-stored_buffer_size;
+            if(input_packet_size<=size_left){
+                stored_buffer_size+=input_packet_size;
+            }else{
+                System.out.println("Packet Dropped");
+            }
+            System.out.println("Stored Buffer Size:"+ stored_buffer_size+"\n");
+            stored_buffer_size-=output_packet_size;
+        }
+        sc.close();
+    }
 }
